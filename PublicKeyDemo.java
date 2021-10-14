@@ -17,6 +17,7 @@ public class PublicKeyDemo{
 
         String encodedString = Base64.getEncoder().encodeToString(publicKey.getEncoded());
         System.out.println(encodedString);
+        System.out.println("length in bytes : " + encodedString.getBytes().length);
 
         X509EncodedKeySpec spec = new X509EncodedKeySpec(Base64.getDecoder().decode(encodedString));
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
