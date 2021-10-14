@@ -1,9 +1,7 @@
 //  genKeyPairs.java
 
 import java.security.*;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
-import javax.crypto.*;
 import java.io.*;
 
 public class genKeyPairs{
@@ -48,28 +46,5 @@ public class genKeyPairs{
     public static void main(String[] args)throws Exception{
         genKeyPairs a = new genKeyPairs();
         a.kickStart();
-/*
-        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-        keyGen.initialize(1024);
-        KeyPair keyPair = keyGen.genKeyPair();
-
-        PublicKey publicKey = keyPair.getPublic();
-        System.out.println(publicKey.getFormat());
-        System.out.println(publicKey.toString());
-
-        String encodedString = Base64.getEncoder().encodeToString(publicKey.getEncoded());
-        System.out.println(encodedString);
-        System.out.println("length in bytes : " + encodedString.getBytes().length);
-
-        X509EncodedKeySpec spec = new X509EncodedKeySpec(Base64.getDecoder().decode(encodedString));
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        PublicKey publicKey2 = keyFactory.generatePublic(spec);
-        System.out.println(publicKey2.toString());
-
-        int maxKeySize = Cipher.getMaxAllowedKeyLength("AES");
-        //  in case of limited policy files, it return 128.
-        //  in case of 2147483647, the JCE uses unlimited policy files.
-        System.out.println("max. key size is " + maxKeySize);
-*/
     }
 }
