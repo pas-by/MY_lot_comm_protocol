@@ -33,10 +33,11 @@ public class UDPClient_001{
 
             //  testing code
             System.out.println("no. of key pairs : " + keyPairs.size());
-            //  System.out.println((int)(Math.random()*1000)%100);
+            int a = (int)(Math.random()*1000*keyPairs.size())%keyPairs.size();
+            System.out.println(a);
 
             //  get a keypair by chance
-            keyPair = keyPairs.get((int)(Math.random()*1000)%100);
+            keyPair = keyPairs.get(a);
         }catch(Exception e){
             System.out.println(e);
             System.exit(0);

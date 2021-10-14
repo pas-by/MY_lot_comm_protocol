@@ -12,12 +12,12 @@ public class genKeyPairs{
     public void kickStart(){
         try{
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-            keyGen.initialize(1024);
             Vector<KeyPair> keyPairs = new Vector<KeyPair>();
             HashMap<String, PublicKey> publicKeys = new HashMap<String, PublicKey>();
 
             //  generate a bunch of key pairs
             for(int index=0; index<numOfKeyPairs; index++){
+                keyGen.initialize(1024);
                 KeyPair keyPair = keyGen.genKeyPair();
                 keyPairs.add(keyPair);
 

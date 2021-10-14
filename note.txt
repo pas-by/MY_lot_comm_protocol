@@ -1,1 +1,7 @@
 base64, RSA 1024, public key size in bytes : 216
+
+AES/CBC/PKCS5Padding
+key size : 256 bits
+IV size  : 128 bits
+
+RSA/ECB/PKCS1Padding
