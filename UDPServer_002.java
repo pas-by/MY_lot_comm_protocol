@@ -5,6 +5,9 @@ import java.security.interfaces.*;
 import java.security.*;
 import java.util.*;
 import java.io.*;
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 public class UDPServer_002 extends Thread{
     protected int port;
@@ -38,14 +41,14 @@ public class UDPServer_002 extends Thread{
         //  System.out.println(strData.length());
 
         //  define the response message
-        byte[] buf = new byte[] {-1};  //  ERROR
+        var buf = new byte[] {-1};  //  ERROR
 
         //  expected to be an authorized public key
         if(publicKeys.containsKey(strData)){
             resultString = "authorized public key received";
             //  System.out.println("check point");
 
-            buf = new byte[] {-2};  //  OK!
+            buf = encryptMessage("HELLO WORLD!", publicKeys.get(strData));
         }
 
         packet = new DatagramPacket(buf, buf.length, iPAddress, port);
@@ -55,6 +58,48 @@ public class UDPServer_002 extends Thread{
         }catch(Exception e){
             System.out.println(e);
         }
+    }
+    protected byte[] encryptMessage(String plainText, RSAPublicKey k){
+        var retValue = new byte[] {-1};
+
+        //  prepare a 32-byte for secret key
+        var r = new SecureRandom();
+        var b32 = new byte[32];
+        r.nextBytes(b32);
+
+        //  prepare a 16-byte for IV
+        r.reseed();
+        var b16 = new byte[16];
+        r.nextBytes(b16);
+
+        try{
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(b32, "AES"), new IvParameterSpec(b16));
+
+            //  encrypt the input message
+            var enByteArray = cipher.doFinal(plainText.getBytes("UTF-8"));
+
+            cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, k);
+
+            //  encrypt the secret key
+            var encodedKey = cipher.doFinal(b32);
+
+            //  pack all data into a byte array
+            var o = new ByteArrayOutputStream();
+            o.write(-2);  //  1st byte, status byte
+            o.write(encodedKey);  // encrypted secret key
+            o.write(b16);  //  IV
+            o.write(enByteArray.length);  //  length of encrypted text
+            o.write(enByteArray);  //  encrypted text
+
+            retValue = o.toByteArray();
+            o.close();
+        }catch(Exception e){
+            System.out.println(e);
+        }
+
+        return retValue;
     }
 
     protected void printEachPublicKey(){

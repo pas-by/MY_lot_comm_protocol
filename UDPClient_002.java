@@ -4,6 +4,9 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.security.*;
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 public class UDPClient_002{
     protected int port = 3301;
@@ -71,7 +74,36 @@ public class UDPClient_002{
             buf = packet.getData();
 
             if(buf[0]==-2){
-                strData = "OK!";
+                var i = new ByteArrayInputStream(buf);
+
+                //  consume the 1'st byte
+                i.read();
+
+                //  get the encrypted secret key
+                var encryptedKey = new byte[128];
+                i.read(encryptedKey);
+
+                //  get the IV
+                var b16 = new byte[16];
+                i.read(b16);  // IV
+
+                //  get the encrypted message
+                var encryptedMessage = new byte[i.read()];
+                i.read(encryptedMessage);
+                i.close();
+    
+                //  get the secrete key
+                var cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+                cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
+                var b32 = cipher.doFinal(encryptedKey);
+
+                //  test code
+                System.out.println("check point 1.");
+
+                //  get the server message
+                cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+                cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(b32, "AES"), new IvParameterSpec(b16));
+                strData = new String(cipher.doFinal(encryptedMessage), "UTF-8");
             }
 
             //  test code
