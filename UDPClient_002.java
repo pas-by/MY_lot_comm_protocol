@@ -1,11 +1,11 @@
-//   UDPClient_001.java
+//   UDPClient_002.java
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.security.*;
 
-public class UDPClient_001{
+public class UDPClient_002{
     protected int port = 3301;
     protected String host = "localhost";
     protected String keyPairsFileName = "keyPairs.bin";
@@ -13,11 +13,11 @@ public class UDPClient_001{
     protected KeyPair keyPair;
 
     //  constructors
-    public UDPClient_001(){
+    public UDPClient_002(){
         init();
     }
 
-    public UDPClient_001(String h, int p){
+    public UDPClient_002(String h, int p){
         port = p;
         host = new String(h);
         init();
@@ -54,6 +54,10 @@ public class UDPClient_001{
             DatagramSocket clientSocket = new DatagramSocket();
             InetAddress iPAddress = InetAddress.getByName(host);
             byte[] buf = new byte[256];
+
+            //  test code
+            //  encodedString = "abcd";
+
             buf = encodedString.getBytes();
 
             DatagramPacket packet = new DatagramPacket(buf, buf.length, iPAddress, port);
@@ -62,8 +66,13 @@ public class UDPClient_001{
             //  wait for return message
             buf = new byte[256];
             packet = new DatagramPacket(buf, buf.length);
+            clientSocket.setSoTimeout(5000);
             clientSocket.receive(packet);
-            strData = new String(packet.getData());
+            buf = packet.getData();
+
+            if(buf[0]==-2){
+                strData = "OK!";
+            }
 
             //  test code
             //  System.out.println("FROM SERVER: " + strData);
@@ -78,7 +87,7 @@ public class UDPClient_001{
     }
 
     public static void main(String[] args)throws Exception{
-        UDPClient_001 a = new UDPClient_001();
+        UDPClient_002 a = new UDPClient_002();
         System.out.println("FROM SERVER: " + a.getMessage());
     }
 }
